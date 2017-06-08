@@ -1,32 +1,35 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs/Rx';
 import { Document } from './document';
+import { DocumentService } from './document.service';
 
 @Component({
   moduleId: module.id,
   selector: 'documents',
   templateUrl: 'documents.component.html',
-  styleUrls: ['documents.component.css']
+  styleUrls: ['documents.component.css'],
+  providers: [ DocumentService ]
 })
-export class DocumentsComponent {
+export class DocumentsComponent implements OnInit {
   pageTitle: string = "Document Dashboard"
-  documents: Document[] = [
-    {title: "My First Doc", 
-    description: "asdfasdaf", 
-    file_url: "http://google.com",
-    updated_at: "11/11/11", 
-    image_url: "http://www.50-best.com/images/funny_nerd_memes/do_you_so_hard_nerd_meme.jpg"
-  },
+  documents: Document[];
+  errorMessage: string;
+  mode = "Observable";
 
-    {title: "My Second Doc", 
-    description: "asdfasdaf", 
-    file_url: "http://google.com",
-    updated_at: "12/12/12", 
-    image_url: "https://img.memecdn.com/nerd-wise_o_557006.jpg"},
+  constructor(
+    private documentService: DocumentService,
+    ) {}
 
-    {title: "My Third Doc", 
-    description: "asdfasdaf", 
-    file_url: "http://google.com",
-    updated_at: "10/10/10", 
-    image_url: "http://funnyasduck.net/wp-content/uploads/2012/11/funny-fat-kid-geek-nerd-welcome-to-the-internet-pics.jpg"}
-  ]
+  ngOnInit() {
+    let timer = Observable.timer(0, 5500)
+    timer.subscribe(() => this.getDocuments());
+  }
+
+  getDocuments() {
+    this.documentService.getDocuments()
+        .subscribe(
+            documents => this.documents = documents,
+            error => this.errorMessage = <any>error
+          );
+  }
 }
